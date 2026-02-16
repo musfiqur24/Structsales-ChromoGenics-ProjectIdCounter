@@ -18,15 +18,15 @@ mongoose.connect(process.env.MONGO_URI)
 // -------------------
 // Simplified Schema - Single Portal Only
 // -------------------
-const appConfigSchema = new mongoose.Schema({
-    _id: { type: String, default: 'single_portal' },
-    accessToken: { type: String, required: true },
-    refreshToken: { type: String, required: true },
-    portalId: { type: String, required: true },
-    currentCounter: { type: Number, default: parseInt(process.env.START_VALUE) || 100000 }
-});
+// const appConfigSchema = new mongoose.Schema({
+//     _id: { type: String, default: 'single_portal' },
+//     accessToken: { type: String, required: true },
+//     refreshToken: { type: String, required: true },
+//     portalId: { type: String, required: true },
+//     currentCounter: { type: Number, default: parseInt(process.env.START_VALUE) || 261525 }
+// });
 
-const AppConfig = mongoose.model("AppConfig", appConfigSchema);
+// const AppConfig = mongoose.model("AppConfig", appConfigSchema);
 
 // -------------------
 // Public App Install URL
@@ -38,6 +38,8 @@ function getInstallUrl() {
         `&scope=${encodeURIComponent(scopes)}` +
         `&redirect_uri=${encodeURIComponent(process.env.HUBSPOT_REDIRECT_URI)}`;
 }
+
+let projectCounter = 261525;
 
 // -------------------
 // Routes
@@ -104,22 +106,22 @@ app.use(express.json());
 app.post('/get-next-project-id', async (req, res) => {
     try {
         // Get the app configuration
-        let config = await AppConfig.findById('single_portal');
+        // let config = await AppConfig.findById('single_portal');
         
-        if (!config) {
-            return res.status(400).json({ 
-                error: "App not installed. Please visit /install first." 
-            });
-        }
+        // if (!config) {
+        //     return res.status(400).json({ 
+        //         error: "App not installed. Please visit /install first." 
+        //     });
+        // }
 
-        // Increment the counter
-        config = await AppConfig.findOneAndUpdate(
-            { _id: 'single_portal' },
-            { $inc: { currentCounter: 1 } },
-            { returnDocument: 'after' }
-        );
+        // // Increment the counter
+        // config = await AppConfig.findOneAndUpdate(
+        //     { _id: 'single_portal' },
+        //     { $inc: { currentCounter: 1 } },
+        //     { returnDocument: 'after' }
+        // );
 
-        const newProjectId = config.currentCounter;
+        const newProjectId = projectCounter++;
 
         // Just return the project ID
         res.json({ 
@@ -130,7 +132,7 @@ app.post('/get-next-project-id', async (req, res) => {
         console.error("Error getting project ID:", err.message);
         res.status(500).json({ 
             success: false,
-            error: "Internal Server Error", 
+            // error: "Internal Server Error", 
             details: err.message 
         });
     }
@@ -163,7 +165,7 @@ app.get('/current-counter', async (req, res) => {
 // -------------------
 app.post('/restart-counter', async (req, res) => {
     try {
-        const startValue = parseInt(process.env.START_VALUE) || 100000;
+        const startValue = parseInt(process.env.START_VALUE) || 261525;
 
         await AppConfig.findOneAndUpdate(
             { _id: 'single_portal' },
