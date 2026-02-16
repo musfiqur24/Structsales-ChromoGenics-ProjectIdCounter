@@ -11,9 +11,9 @@ console.log('REDIRECT_URI:', process.env.HUBSPOT_REDIRECT_URI);
 // -------------------
 // MongoDB Connection
 // -------------------
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB connected"))
-    .catch(err => console.error("Mongo error:", err));
+// mongoose.connect(process.env.MONGO_URI)
+//     .then(() => console.log("MongoDB connected"))
+//     .catch(err => console.error("Mongo error:", err));
 
 // -------------------
 // Simplified Schema - Single Portal Only
